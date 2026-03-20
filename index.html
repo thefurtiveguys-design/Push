@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub WebApp Viewer & Vercel Deploy</title>
+    <title>GitHub Visualizer - Visualisez n'importe quel repo public</title>
     
-    <!-- Fonts & Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Xterm.js -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         * {
@@ -23,334 +19,119 @@
             font-family: 'Inter', sans-serif;
             background: #0a0a0f;
             color: #e1e1e6;
-            height: 100vh;
-            overflow: hidden;
         }
 
-        .app {
-            display: flex;
-            height: 100vh;
-            background: #0a0a0f;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 320px;
-            background: #0f0f17;
-            border-right: 1px solid #2a2a35;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        .sidebar-header {
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
             padding: 20px;
-            border-bottom: 1px solid #2a2a35;
         }
 
-        .sidebar-header h2 {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #88889b;
-            margin-bottom: 15px;
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
         }
 
-        .github-input {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .github-input input {
-            flex: 1;
-            background: #1a1a24;
-            border: 1px solid #2a2a35;
-            border-radius: 8px;
-            padding: 10px 12px;
-            color: #e1e1e6;
-            font-size: 13px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .github-input input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-        }
-
-        .github-input button {
-            background: #3b82f6;
-            border: none;
-            border-radius: 8px;
-            padding: 0 15px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-
-        .github-input button:hover {
-            background: #2563eb;
-        }
-
-        .example-repos {
-            margin-top: 20px;
-        }
-
-        .example-title {
-            font-size: 11px;
-            color: #88889b;
+        .header h1 {
+            font-size: 2.5em;
             margin-bottom: 10px;
         }
 
-        .example-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        .header p {
+            opacity: 0.9;
         }
 
-        .example-btn {
-            background: #1a1a24;
-            border: 1px solid #2a2a35;
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 12px;
-            color: #c9c9d5;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .example-btn:hover {
-            background: #2a2a35;
-            border-color: #3b82f6;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+        /* Search Bar */
+        .search-section {
             background: #0f0f17;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #2a2a35;
         }
 
-        /* Toolbar */
-        .toolbar {
-            height: 50px;
-            background: #0a0a0f;
-            border-bottom: 1px solid #2a2a35;
+        .search-box {
             display: flex;
-            align-items: center;
-            padding: 0 20px;
-            gap: 20px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .toolbar-item {
+        .search-input {
+            flex: 1;
+            background: #1a1a24;
+            border: 2px solid #2a2a35;
+            border-radius: 12px;
+            padding: 15px 20px;
+            color: #e1e1e6;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0 30px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .examples {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #88889b;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .example-tag {
+            background: #1a1a24;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-size: 13px;
             cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 6px;
             transition: all 0.2s;
-        }
-
-        .toolbar-item:hover {
-            background: #1a1a24;
-            color: #e1e1e6;
-        }
-
-        .toolbar-item i {
-            font-size: 14px;
-        }
-
-        .toolbar-divider {
-            width: 1px;
-            height: 24px;
-            background: #2a2a35;
-        }
-
-        .project-status {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-        }
-
-        /* Preview Section */
-        .preview-section {
-            height: 50%;
-            border-bottom: 1px solid #2a2a35;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .preview-header {
-            height: 40px;
-            background: #0a0a0f;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            gap: 15px;
-            border-bottom: 1px solid #2a2a35;
-        }
-
-        .preview-tabs {
-            display: flex;
-            gap: 2px;
-            background: #1a1a24;
-            border-radius: 8px;
-            padding: 2px;
-        }
-
-        .preview-tab {
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            color: #88889b;
-            transition: all 0.2s;
-        }
-
-        .preview-tab.active {
-            background: #2a2a35;
-            color: #e1e1e6;
-        }
-
-        .preview-content {
-            flex: 1;
-            background: #0f0f17;
-            overflow: auto;
-            padding: 20px;
-        }
-
-        /* Iframe pour visualiser la webapp */
-        .webapp-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-            border-radius: 8px;
-        }
-
-        /* Terminal Section */
-        .terminal-section {
-            height: 50%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .terminal-header {
-            height: 40px;
-            background: #0a0a0f;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            border-bottom: 1px solid #2a2a35;
-        }
-
-        .terminal-actions {
-            display: flex;
-            gap: 8px;
-            margin-left: auto;
-        }
-
-        .terminal-btn {
-            background: none;
-            border: none;
-            color: #88889b;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .terminal-btn:hover {
-            background: #1a1a24;
-            color: #e1e1e6;
-        }
-
-        #terminal-container {
-            flex: 1;
-            padding: 10px;
-        }
-
-        #terminal {
-            height: 100%;
-            width: 100%;
-        }
-
-        /* Quick Commands */
-        .quick-commands {
-            display: flex;
-            gap: 8px;
-            padding: 10px 20px;
-            background: #0a0a0f;
-            border-top: 1px solid #2a2a35;
-            overflow-x: auto;
-        }
-
-        .quick-cmd {
-            background: #1a1a24;
             border: 1px solid #2a2a35;
-            border-radius: 20px;
-            padding: 6px 14px;
-            font-size: 12px;
-            color: #c9c9d5;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
         }
 
-        .quick-cmd:hover {
-            background: #2a2a35;
-            border-color: #3b82f6;
+        .example-tag:hover {
+            background: #667eea;
+            border-color: #667eea;
         }
 
-        .quick-cmd i {
-            margin-right: 5px;
-            font-size: 11px;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #1e293b;
-            border-left: 4px solid #3b82f6;
-            border-radius: 8px;
-            padding: 16px 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 1000;
-            max-width: 400px;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
+        /* Loading */
         .loading {
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100%;
-            gap: 10px;
-            color: #88889b;
+            gap: 15px;
+            padding: 60px;
+            background: #0f0f17;
+            border-radius: 20px;
+            border: 1px solid #2a2a35;
         }
 
         .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #2a2a35;
-            border-top-color: #3b82f6;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #2a2a35;
+            border-top-color: #667eea;
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
         }
@@ -359,435 +140,564 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
+        /* Repo Info */
+        .repo-info {
             background: #0f0f17;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #2a2a35;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #2a2a35;
-            border-radius: 4px;
+        .repo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .repo-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .repo-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #88889b;
+        }
+
+        .repo-description {
+            color: #c9c9d5;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .repo-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding-top: 20px;
+            border-top: 1px solid #2a2a35;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #88889b;
+            font-size: 14px;
+        }
+
+        /* File Explorer */
+        .file-explorer {
+            background: #0f0f17;
+            border-radius: 20px;
+            border: 1px solid #2a2a35;
+            overflow: hidden;
+        }
+
+        .explorer-header {
+            background: #1a1a24;
+            padding: 15px 20px;
+            border-bottom: 1px solid #2a2a35;
+            font-weight: 600;
+        }
+
+        .breadcrumb {
+            padding: 15px 20px;
+            background: #0f0f17;
+            border-bottom: 1px solid #2a2a35;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .breadcrumb-item {
+            color: #88889b;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb-item:hover {
+            color: #667eea;
+        }
+
+        .files-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-bottom: 1px solid #2a2a35;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-item:hover {
+            background: #1a1a24;
+        }
+
+        .file-icon {
+            width: 20px;
+            color: #88889b;
+        }
+
+        .file-name {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .file-size {
+            color: #88889b;
+            font-size: 12px;
+        }
+
+        /* File Content */
+        .file-content {
+            background: #0f0f17;
+            border-radius: 20px;
+            border: 1px solid #2a2a35;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .content-header {
+            background: #1a1a24;
+            padding: 15px 20px;
+            border-bottom: 1px solid #2a2a35;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-body {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .content-body pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Error */
+        .error {
+            background: rgba(245, 101, 101, 0.1);
+            border: 1px solid #f56565;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            color: #f56565;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .repo-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-btn {
+                padding: 12px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2><i class="fab fa-github"></i> Visualiser une webapp</h2>
-                <div class="github-input">
-                    <input type="text" id="repoUrl" placeholder="ex: facebook/react" value="facebook/react">
-                    <button onclick="loadAndPreviewWebApp()">
-                        <i class="fas fa-eye"></i> Voir
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fab fa-github"></i> 
+                GitHub Visualizer
+            </h1>
+            <p>Visualisez n'importe quel repository public GitHub instantanément</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" class="search-input" id="repoInput" placeholder="ex: facebook/react, vuejs/vue, tailwindlabs/tailwindcss" value="facebook/react">
+                <button class="search-btn" onclick="loadRepository()">
+                    <i class="fas fa-search"></i> Visualiser
+                </button>
+            </div>
+            <div class="examples">
+                <span class="example-tag" onclick="quickLoad('facebook/react')">📱 facebook/react</span>
+                <span class="example-tag" onclick="quickLoad('vuejs/vue')">🟢 vuejs/vue</span>
+                <span class="example-tag" onclick="quickLoad('vercel/next.js')">▲ vercel/next.js</span>
+                <span class="example-tag" onclick="quickLoad('tailwindlabs/tailwindcss')">🎨 tailwindlabs/tailwindcss</span>
+                <span class="example-tag" onclick="quickLoad('nodejs/node')">🟢 nodejs/node</span>
+                <span class="example-tag" onclick="quickLoad('microsoft/vscode')">💻 microsoft/vscode</span>
+            </div>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <span>Chargement du repository...</span>
+        </div>
+
+        <div id="error" class="error hidden"></div>
+
+        <div id="content" class="hidden">
+            <div class="repo-info" id="repoInfo"></div>
+            <div class="file-explorer">
+                <div class="explorer-header">
+                    <i class="fas fa-folder-open"></i> Explorateur de fichiers
+                </div>
+                <div class="breadcrumb" id="breadcrumb"></div>
+                <div class="files-list" id="filesList"></div>
+            </div>
+            <div id="fileContent" class="file-content hidden">
+                <div class="content-header">
+                    <span><i class="fas fa-file-code"></i> <span id="currentFileName"></span></span>
+                    <button class="search-btn" style="padding: 6px 12px; font-size: 12px;" onclick="closeFileView()">
+                        <i class="fas fa-times"></i> Fermer
                     </button>
                 </div>
-                
-                <div class="example-repos">
-                    <div class="example-title">📦 Exemples de webapps à tester :</div>
-                    <div class="example-buttons">
-                        <div class="example-btn" onclick="quickLoad('facebook/react')">
-                            <i class="fab fa-react"></i> React Demo
-                        </div>
-                        <div class="example-btn" onclick="quickLoad('vuejs/vue')">
-                            <i class="fab fa-vuejs"></i> Vue.js
-                        </div>
-                        <div class="example-btn" onclick="quickLoad('vercel/next.js')">
-                            <i class="fab fa-vercel"></i> Next.js
-                        </div>
-                        <div class="example-btn" onclick="quickLoad('tailwindlabs/tailwindcss')">
-                            <i class="fas fa-wind"></i> Tailwind CSS
-                        </div>
-                        <div class="example-btn" onclick="quickLoad('chakra-ui/chakra-ui')">
-                            <i class="fas fa-palette"></i> Chakra UI
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div style="padding: 20px; border-top: 1px solid #2a2a35; margin-top: auto;">
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size: 12px; color: #88889b;">
-                        <i class="fas fa-key"></i> Token GitHub (repos privés)
-                    </label>
-                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx" 
-                           style="width: 100%; background: #1a1a24; border: 1px solid #2a2a35; border-radius: 6px; padding: 8px; margin-top: 5px; color: #e1e1e6;">
-                </div>
-                <div>
-                    <label style="font-size: 12px; color: #88889b;">
-                        <i class="fas fa-cloud"></i> Token Vercel
-                    </label>
-                    <input type="password" id="vercelToken" placeholder="xxxxxxxxxxxx" 
-                           style="width: 100%; background: #1a1a24; border: 1px solid #2a2a35; border-radius: 6px; padding: 8px; margin-top: 5px; color: #e1e1e6;">
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="toolbar">
-                <div class="toolbar-item" onclick="deployToVercel()">
-                    <i class="fas fa-rocket"></i>
-                    <span>Déployer sur Vercel</span>
-                </div>
-                <div class="toolbar-item" onclick="openInNewTab()">
-                    <i class="fas fa-external-link-alt"></i>
-                    <span>Ouvrir dans nouvel onglet</span>
-                </div>
-                <div class="toolbar-divider"></div>
-                <div class="toolbar-item" onclick="refreshPreview()">
-                    <i class="fas fa-sync-alt"></i>
-                    <span>Rafraîchir</span>
-                </div>
-                
-                <div class="project-status">
-                    <span class="status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></span>
-                    <span id="currentRepoName">facebook/react</span>
-                </div>
-            </div>
-
-            <!-- Preview Section avec iframe -->
-            <div class="preview-section">
-                <div class="preview-header">
-                    <div class="preview-tabs">
-                        <div class="preview-tab active" onclick="switchTab('webapp')">🌐 Aperçu de la webapp</div>
-                        <div class="preview-tab" onclick="switchTab('readme')">📖 README</div>
-                        <div class="preview-tab" onclick="switchTab('files')">📁 Fichiers</div>
-                    </div>
-                    <div style="flex:1"></div>
-                    <div id="repoStats" style="font-size: 12px; color: #88889b;">
-                        ⭐ Chargement...
-                    </div>
-                </div>
-
-                <div class="preview-content" id="previewContent">
-                    <div id="webappView" class="loading">
-                        <div class="spinner"></div>
-                        <span>Chargement de la webapp...</span>
-                    </div>
-                    <div id="readmeView" style="display: none;"></div>
-                    <div id="filesView" style="display: none;"></div>
-                </div>
-            </div>
-
-            <!-- Terminal -->
-            <div class="terminal-section">
-                <div class="terminal-header">
-                    <span><i class="fas fa-terminal"></i> Terminal</span>
-                    <div class="terminal-actions">
-                        <button class="terminal-btn" onclick="clearTerminal()">
-                            <i class="fas fa-eraser"></i> Effacer
-                        </button>
-                    </div>
-                </div>
-                <div id="terminal-container">
-                    <div id="terminal"></div>
-                </div>
-                <div class="quick-commands">
-                    <div class="quick-cmd" onclick="runCommand('vercel login')">
-                        <i class="fas fa-key"></i> vercel login
-                    </div>
-                    <div class="quick-cmd" onclick="runCommand('vercel')">
-                        <i class="fas fa-rocket"></i> vercel
-                    </div>
-                    <div class="quick-cmd" onclick="runCommand('git clone ' + getCurrentRepoUrl())">
-                        <i class="fab fa-github"></i> git clone
-                    </div>
-                    <div class="quick-cmd" onclick="runCommand('npm install')">
-                        <i class="fab fa-npm"></i> npm install
-                    </div>
-                    <div class="quick-cmd" onclick="runCommand('npm run dev')">
-                        <i class="fas fa-play"></i> npm run dev
-                    </div>
+                <div class="content-body" id="fileContentBody">
+                    <pre></pre>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="toast" id="toast">
-        <div class="toast-title" id="toastTitle">✅ Succès</div>
-        <div class="toast-message" id="toastMessage"></div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.min.js"></script>
 
     <script>
-        // Configuration
-        let term;
-        let fitAddon;
-        let currentRepo = 'facebook/react';
-        let currentPreviewUrl = '';
-        
-        // Base de données des démos (simulée)
-        const demoApps = {
-            'facebook/react': {
-                demoUrl: 'https://cdn.jsdelivr.net/npm/react@18.2.0/umd/',
-                readme: `# ⚛️ React\n\nBibliothèque JavaScript pour construire des interfaces utilisateur.\n\n## Installation\n\`\`\`bash\nnpx create-react-app my-app\ncd my-app\nnpm start\n\`\`\`\n\n## Visualisation\nCette webapp React peut être déployée sur Vercel en 1 clic !`,
-                files: ['src/App.js', 'src/index.js', 'package.json', 'public/index.html']
-            },
-            'vuejs/vue': {
-                demoUrl: 'https://cdn.jsdelivr.net/npm/vue@3.3.0/dist/',
-                readme: `# 🟢 Vue.js\n\nFramework JavaScript progressif.\n\n## Installation\n\`\`\`bash\nnpm create vue@latest\ncd my-app\nnpm install\nnpm run dev\n\`\`\``,
-                files: ['src/App.vue', 'src/main.js', 'package.json', 'index.html']
-            },
-            'vercel/next.js': {
-                demoUrl: 'https://nextjs.org/',
-                readme: `# ▲ Next.js\n\nFramework React pour la production.\n\n## Installation\n\`\`\`bash\nnpx create-next-app@latest\ncd my-app\nnpm run dev\n\`\`\``,
-                files: ['pages/index.js', 'styles/globals.css', 'next.config.js', 'package.json']
+        let currentRepo = '';
+        let currentPath = '';
+        let currentSha = '';
+
+        // Charger un repository
+        async function loadRepository() {
+            const repoInput = document.getElementById('repoInput').value.trim();
+            if (!repoInput) {
+                showError('Veuillez entrer un nom de repository (ex: facebook/react)');
+                return;
             }
-        };
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', () => {
-            initTerminal();
-            loadAndPreviewWebApp();
-        });
+            currentRepo = repoInput;
+            currentPath = '';
+            
+            showLoading();
+            hideError();
+            
+            try {
+                // Récupérer les infos du repo
+                const repoInfo = await fetchGitHubAPI(`/repos/${repoInput}`);
+                
+                if (!repoInfo.ok) {
+                    throw new Error(`Repository non trouvé: ${repoInput}`);
+                }
+                
+                const repoData = await repoInfo.json();
+                
+                // Récupérer le contenu du dossier racine
+                const contents = await fetchGitHubAPI(`/repos/${repoInput}/contents/`);
+                const filesData = await contents.json();
+                
+                displayRepoInfo(repoData);
+                displayFiles(filesData, '');
+                
+                hideLoading();
+                showContent();
+                
+            } catch (error) {
+                hideLoading();
+                showError(error.message);
+                console.error('Erreur:', error);
+            }
+        }
 
-        function initTerminal() {
-            term = new Terminal({
-                cursorBlink: true,
-                fontSize: 13,
-                fontFamily: 'Menlo, Monaco, monospace',
-                theme: {
-                    background: '#0f0f17',
-                    foreground: '#c9c9d5',
-                    cursor: '#c9c9d5'
+        // Appel à l'API GitHub
+        async function fetchGitHubAPI(endpoint) {
+            const response = await fetch(`https://api.github.com${endpoint}`, {
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    // Pas besoin de token pour les repos publics, mais c'est plus fiable avec
+                    // 'Authorization': 'token VOTRE_TOKEN' 
                 }
             });
-
-            fitAddon = new FitAddon.FitAddon();
-            term.loadAddon(fitAddon);
-            term.open(document.getElementById('terminal'));
-            fitAddon.fit();
-
-            term.writeln('\x1b[1;34m🚀 Vercel Deploy Terminal\x1b[0m');
-            term.writeln('Trouvez une webapp GitHub, visualisez-la, et déployez-la !');
-            term.writeln('');
-            prompt();
-
-            term.onData(handleInput);
-            window.addEventListener('resize', () => fitAddon.fit());
+            return response;
         }
 
-        let currentLine = '';
-        
-        function prompt() {
-            term.write(`\r\n\x1b[1;32m${currentRepo.split('/')[1]}\x1b[0m $ `);
-            currentLine = '';
-        }
-
-        function handleInput(data) {
-            if (data.charCodeAt(0) === 13) {
-                term.writeln('');
-                executeCommand(currentLine.trim());
-                prompt();
-            } else if (data.charCodeAt(0) === 127) {
-                if (currentLine.length > 0) {
-                    currentLine = currentLine.slice(0, -1);
-                    term.write('\b \b');
-                }
-            } else {
-                currentLine += data;
-                term.write(data);
-            }
-        }
-
-        function executeCommand(cmd) {
-            if (!cmd) return;
+        // Afficher les infos du repository
+        function displayRepoInfo(data) {
+            const date = new Date(data.updated_at).toLocaleDateString('fr-FR');
             
-            term.writeln(`\x1b[33m> ${cmd}\x1b[0m`);
-            
-            if (cmd.includes('vercel')) {
-                term.writeln('\x1b[32m✓ Déploiement Vercel réussi !\x1b[0m');
-                term.writeln(`\x1b[36m🔗 https://${currentRepo.split('/')[1]}.vercel.app\x1b[0m`);
-                showToast('Déploiement réussi !', 'Votre webapp est en ligne');
-            } else if (cmd.includes('git clone')) {
-                term.writeln('\x1b[32m✓ Clonage terminé\x1b[0m');
-                term.writeln(`📁 Repository: ${currentRepo}`);
-            } else if (cmd.includes('npm install')) {
-                term.writeln('\x1b[32m✓ Dépendances installées\x1b[0m');
-            } else {
-                term.writeln(`Commande exécutée: ${cmd}`);
-            }
-        }
-
-        function runCommand(cmd) {
-            term.writeln('');
-            executeCommand(cmd);
-        }
-
-        function clearTerminal() {
-            term.clear();
-            prompt();
-        }
-
-        // Fonction principale : charger et visualiser une webapp
-        async function loadAndPreviewWebApp() {
-            const repoInput = document.getElementById('repoUrl').value.trim();
-            if (!repoInput) return;
-            
-            currentRepo = repoInput;
-            document.getElementById('currentRepoName').textContent = currentRepo;
-            
-            showToast('Chargement...', `Analyse de ${currentRepo}`);
-            
-            // Afficher le chargement
-            document.getElementById('webappView').innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <span>Chargement de ${currentRepo}...</span>
+            document.getElementById('repoInfo').innerHTML = `
+                <div class="repo-header">
+                    <div>
+                        <div class="repo-name">
+                            <i class="fab fa-github"></i> ${data.full_name}
+                        </div>
+                        <div class="repo-stats" style="margin-top: 10px;">
+                            <div class="stat">
+                                <i class="fas fa-star"></i> ${formatNumber(data.stargazers_count)} stars
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-code-branch"></i> ${formatNumber(data.forks_count)} forks
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-eye"></i> ${formatNumber(data.watchers_count)} watchers
+                            </div>
+                        </div>
+                    </div>
+                    <a href="${data.html_url}" target="_blank" class="search-btn" style="display: inline-block; padding: 10px 20px; text-decoration: none;">
+                        <i class="fab fa-github"></i> Voir sur GitHub
+                    </a>
+                </div>
+                <div class="repo-description">
+                    ${data.description || 'Aucune description disponible'}
+                </div>
+                <div class="repo-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i> Dernière mise à jour: ${date}
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-code"></i> Langage principal: ${data.language || 'Non spécifié'}
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-file-alt"></i> Licence: ${data.license?.name || 'Non spécifiée'}
+                    </div>
                 </div>
             `;
+        }
+
+        // Afficher les fichiers et dossiers
+        function displayFiles(files, path) {
+            const filesList = document.getElementById('filesList');
+            const breadcrumb = document.getElementById('breadcrumb');
             
-            // Simuler le chargement du repo
-            setTimeout(() => {
-                const demo = demoApps[currentRepo] || demoApps['facebook/react'];
+            // Filtrer et trier: dossiers d'abord, puis fichiers
+            const sortedFiles = files.sort((a, b) => {
+                if (a.type === 'dir' && b.type !== 'dir') return -1;
+                if (a.type !== 'dir' && b.type === 'dir') return 1;
+                return a.name.localeCompare(b.name);
+            });
+            
+            filesList.innerHTML = sortedFiles.map(file => `
+                <div class="file-item" onclick="openItem('${file.path}', '${file.type}', '${file.sha}')">
+                    <div class="file-icon">
+                        <i class="fas ${getFileIcon(file.name, file.type)}"></i>
+                    </div>
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-size">${file.size ? formatFileSize(file.size) : ''}</div>
+                </div>
+            `).join('');
+            
+            // Mettre à jour le breadcrumb
+            const pathParts = path.split('/').filter(p => p);
+            breadcrumb.innerHTML = `
+                <div class="breadcrumb-item" onclick="navigateToRoot()">
+                    <i class="fas fa-home"></i> ${currentRepo}
+                </div>
+                ${pathParts.map((part, index) => `
+                    <i class="fas fa-chevron-right" style="color: #88889b; font-size: 12px;"></i>
+                    <div class="breadcrumb-item" onclick="navigateToPath('${pathParts.slice(0, index + 1).join('/')}')">
+                        ${part}
+                    </div>
+                `).join('')}
+            `;
+            
+            currentPath = path;
+        }
+
+        // Ouvrir un fichier ou dossier
+        async function openItem(path, type, sha) {
+            if (type === 'dir') {
+                // Naviguer dans le dossier
+                const response = await fetchGitHubAPI(`/repos/${currentRepo}/contents/${path}`);
+                const data = await response.json();
+                displayFiles(data, path);
+            } else {
+                // Afficher le contenu du fichier
+                await showFileContent(path);
+            }
+        }
+
+        // Afficher le contenu d'un fichier
+        async function showFileContent(filePath) {
+            showLoading();
+            
+            try {
+                const response = await fetchGitHubAPI(`/repos/${currentRepo}/contents/${filePath}`);
+                const data = await response.json();
                 
-                // Mettre à jour les stats
-                document.getElementById('repoStats').innerHTML = `⭐ ${Math.floor(Math.random() * 100000)} stars · 📦 ${currentRepo.split('/')[0]}`;
-                
-                // Afficher la webapp dans l'iframe
-                let htmlContent = '';
-                
-                if (currentRepo === 'facebook/react') {
-                    htmlContent = `
-                        <div style="padding: 20px; background: #0f0f17; height: 100%; overflow: auto;">
-                            <div style="background: linear-gradient(135deg, #61dafb, #007acc); border-radius: 12px; padding: 40px; text-align: center; color: white;">
-                                <i class="fab fa-react" style="font-size: 80px; margin-bottom: 20px;"></i>
-                                <h1 style="font-size: 32px;">React Demo</h1>
-                                <p style="margin-top: 10px;">La bibliothèque JavaScript pour construire des interfaces</p>
-                                <div style="margin-top: 30px;">
-                                    <button onclick="deployToVercel()" style="background: white; color: #007acc; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                        🚀 Déployer sur Vercel
-                                    </button>
-                                </div>
-                                <div style="margin-top: 30px; text-align: left; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 20px;">
-                                    <code>npx create-react-app my-app<br>cd my-app<br>npm start</code>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else if (currentRepo === 'vuejs/vue') {
-                    htmlContent = `
-                        <div style="padding: 20px; background: #0f0f17; height: 100%; overflow: auto;">
-                            <div style="background: linear-gradient(135deg, #42b883, #35495e); border-radius: 12px; padding: 40px; text-align: center; color: white;">
-                                <i class="fab fa-vuejs" style="font-size: 80px; margin-bottom: 20px;"></i>
-                                <h1 style="font-size: 32px;">Vue.js Demo</h1>
-                                <p>Framework JavaScript progressif</p>
-                                <div style="margin-top: 30px;">
-                                    <button onclick="deployToVercel()" style="background: white; color: #42b883; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                        🚀 Déployer sur Vercel
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    htmlContent = `
-                        <div style="padding: 20px; background: #0f0f17; height: 100%; overflow: auto;">
-                            <div style="background: #1a1a24; border-radius: 12px; padding: 40px; text-align: center;">
-                                <i class="fab fa-github" style="font-size: 80px; color: #3b82f6; margin-bottom: 20px;"></i>
-                                <h2>${currentRepo}</h2>
-                                <p style="color: #88889b; margin-top: 10px;">Repository GitHub trouvé !</p>
-                                <div style="margin-top: 30px;">
-                                    <button onclick="deployToVercel()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                                        🚀 Déployer sur Vercel
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                if (data.encoding === 'base64') {
+                    // Décoder le contenu base64
+                    const content = atob(data.content);
+                    
+                    document.getElementById('currentFileName').textContent = filePath;
+                    const contentBody = document.getElementById('fileContentBody');
+                    
+                    // Détecter si c'est une image
+                    if (data.name.match(/\.(jpg|jpeg|png|gif|svg)$/i)) {
+                        contentBody.innerHTML = `<img src="data:image/${data.name.split('.').pop()};base64,${data.content}" style="max-width: 100%;">`;
+                    } else {
+                        // Formater selon l'extension
+                        const language = getLanguageFromExtension(data.name);
+                        contentBody.innerHTML = `<pre><code class="language-${language}">${escapeHtml(content)}</code></pre>`;
+                    }
+                    
+                    document.getElementById('fileContent').classList.remove('hidden');
                 }
                 
-                document.getElementById('webappView').innerHTML = htmlContent;
-                
-                // Charger le README
-                const readmeContent = document.getElementById('readmeView');
-                readmeContent.innerHTML = `
-                    <div class="loading" style="justify-content: flex-start; text-align: left; padding: 20px;">
-                        <pre style="white-space: pre-wrap; font-family: monospace;">${demo.readme}</pre>
-                    </div>
-                `;
-                
-                // Charger les fichiers
-                const filesContent = document.getElementById('filesView');
-                filesContent.innerHTML = `
-                    <div style="padding: 20px;">
-                        <h3 style="margin-bottom: 15px;">📁 Structure du projet</h3>
-                        ${demo.files.map(file => `
-                            <div style="padding: 8px; border-bottom: 1px solid #2a2a35; display: flex; align-items: center; gap: 10px;">
-                                <i class="fas fa-${file.includes('.') ? 'file-code' : 'folder'}"></i>
-                                <span>${file}</span>
-                            </div>
-                        `).join('')}
-                        <div style="margin-top: 20px; padding: 15px; background: #1a1a24; border-radius: 8px;">
-                            <i class="fas fa-info-circle"></i> Cette webapp est prête à être déployée !
-                        </div>
-                    </div>
-                `;
-                
-                showToast('✅ Webapp chargée', `${currentRepo} prêt à être visualisé et déployé`);
-            }, 1000);
+                hideLoading();
+            } catch (error) {
+                hideLoading();
+                showError(`Impossible de lire le fichier: ${error.message}`);
+            }
+        }
+
+        function closeFileView() {
+            document.getElementById('fileContent').classList.add('hidden');
+        }
+
+        function navigateToRoot() {
+            refreshCurrentFolder();
+        }
+
+        async function navigateToPath(path) {
+            const response = await fetchGitHubAPI(`/repos/${currentRepo}/contents/${path}`);
+            const data = await response.json();
+            displayFiles(data, path);
+        }
+
+        async function refreshCurrentFolder() {
+            const response = await fetchGitHubAPI(`/repos/${currentRepo}/contents/${currentPath}`);
+            const data = await response.json();
+            displayFiles(data, currentPath);
         }
 
         function quickLoad(repo) {
-            document.getElementById('repoUrl').value = repo;
-            loadAndPreviewWebApp();
+            document.getElementById('repoInput').value = repo;
+            loadRepository();
         }
 
-        function switchTab(tab) {
-            // Mettre à jour les onglets
-            const tabs = document.querySelectorAll('.preview-tab');
-            tabs.forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+        // Utilitaires
+        function getFileIcon(filename, type) {
+            if (type === 'dir') return 'fa-folder';
             
-            // Afficher/masquer les vues
-            document.getElementById('webappView').style.display = tab === 'webapp' ? 'block' : 'none';
-            document.getElementById('readmeView').style.display = tab === 'readme' ? 'block' : 'none';
-            document.getElementById('filesView').style.display = tab === 'files' ? 'block' : 'none';
+            const ext = filename.split('.').pop();
+            const icons = {
+                js: 'fa-js',
+                jsx: 'fa-react',
+                ts: 'fa-code',
+                tsx: 'fa-react',
+                html: 'fa-html5',
+                css: 'fa-css3',
+                json: 'fa-code',
+                md: 'fa-markdown',
+                py: 'fa-python',
+                java: 'fa-java',
+                php: 'fa-php',
+                rb: 'fa-gem',
+                go: 'fa-code',
+                rs: 'fa-code',
+                vue: 'fa-vuejs',
+                svg: 'fa-image',
+                png: 'fa-image',
+                jpg: 'fa-image',
+                gif: 'fa-image'
+            };
+            return icons[ext] || 'fa-file';
         }
 
-        function deployToVercel() {
-            showToast('🚀 Déploiement en cours...', 'Préparation du build');
-            
-            setTimeout(() => {
-                showToast('✅ Déploiement réussi !', `https://${currentRepo.split('/')[1]}.vercel.app`);
-                
-                // Afficher dans le terminal
-                term.writeln('');
-                term.writeln('\x1b[1;32m✓ Déploiement Vercel réussi !\x1b[0m');
-                term.writeln(`\x1b[36m🔗 https://${currentRepo.split('/')[1]}.vercel.app\x1b[0m`);
-            }, 2000);
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
         }
 
-        function openInNewTab() {
-            const url = `https://github.com/${currentRepo}`;
-            window.open(url, '_blank');
-            showToast('Ouverture', `GitHub: ${currentRepo}`);
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+            return num.toString();
         }
 
-        function refreshPreview() {
-            loadAndPreviewWebApp();
+        function getLanguageFromExtension(filename) {
+            const ext = filename.split('.').pop();
+            const langs = {
+                js: 'javascript',
+                jsx: 'javascript',
+                ts: 'typescript',
+                tsx: 'typescript',
+                html: 'html',
+                css: 'css',
+                json: 'json',
+                py: 'python',
+                java: 'java',
+                md: 'markdown'
+            };
+            return langs[ext] || 'plaintext';
         }
 
-        function getCurrentRepoUrl() {
-            return `https://github.com/${currentRepo}.git`;
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
-        function showToast(title, message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastTitle').innerHTML = title;
-            document.getElementById('toastMessage').innerHTML = message;
-            
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('content').classList.add('hidden');
         }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function showContent() {
+            document.getElementById('content').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerHTML = `
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                <h3>Erreur</h3>
+                <p>${message}</p>
+            `;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('error').classList.add('hidden');
+        }
+
+        // Charger le repo par défaut au démarrage
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRepository();
+        });
     </script>
 </body>
 </html>
