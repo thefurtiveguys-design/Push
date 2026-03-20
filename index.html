@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Vercel Deploy Terminal - WebApp</title>
+    
+    <!-- Styles xterm.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2d3748;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p {
+            color: #cbd5e0;
+            font-size: 1.1em;
+        }
+
+        .setup-panel {
+            padding: 30px;
+            background: #f7fafc;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .card h3 {
+            color: #4a5568;
+            margin: 20px 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group small {
+            display: block;
+            color: #718096;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .info-box {
+            background: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box p {
+            color: #2c5282;
+            margin: 5px 0;
+        }
+
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .button.secondary {
+            background: #48bb78;
+        }
+
+        .button.secondary:hover {
+            background: #38a169;
+        }
+
+        .button.danger {
+            background: #f56565;
+        }
+
+        .button.danger:hover {
+            background: #e53e3e;
+        }
+
+        .terminal-container {
+            padding: 20px;
+            background: #1a202c;
+        }
+
+        #terminal {
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .command-palette {
+            background: #2d3748;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .command-btn {
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .command-btn:hover {
+            background: #667eea;
+        }
+
+        .status-bar {
+            background: #2d3748;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+        }
+
+        .status-online {
+            color: #48bb78;
+        }
+
+        .status-offline {
+            color: #f56565;
+        }
+
+        .output-panel {
+            background: #1a202c;
+            color: #cbd5e0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .output-panel pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🚀</span>
+                Vercel Deploy Terminal
+            </h1>
+            <p>Déployez vos projets sur Vercel depuis un terminal web</p>
+        </div>
+
+        <div id="setupPanel" class="setup-panel">
+            <div class="card">
+                <h2>📁 Configuration du projet</h2>
+                
+                <div class="input-group">
+                    <label>Type de projet :</label>
+                    <select id="projectType">
+                        <option value="react">React / Next.js</option>
+                        <option value="vue">Vue.js</option>
+                        <option value="static">Site statique</option>
+                        <option value="node">Node.js</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Chemin du projet :</label>
+                    <input type="text" id="projectPath" placeholder="/home/user/mon-projet" value="/tmp/demo-project">
+                    <small>Chemin absolu vers votre projet</small>
+                </div>
+
+                <div class="input-group">
+                    <label>Nom du projet Vercel :</label>
+                    <input type="text" id="projectName" placeholder="mon-projet-vercel" value="demo-deploy">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔐 Authentification</h2>
+                
+                <h3>GitHub (optionnel)</h3>
+                <div class="input-group">
+                    <label>Token GitHub :</label>
+                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx">
+                </div>
+
+                <div class="input-group">
+                    <label>Repository GitHub :</label>
+                    <input type="text" id="githubRepo" placeholder="username/mon-repo">
+                </div>
+
+                <h3>Vercel</h3>
+                <div class="info-box">
+                    <p>🔑 Vous pouvez utiliser :</p>
+                    <p>• `vercel login` dans le terminal</p>
+                    <p>• Ou configurer un token Vercel :</p>
+                </div>
+                
+                <div class="input-group">
+                    <label>Token Vercel (optionnel) :</label>
+                    <input type="password" id="vercelToken" placeholder="xxxxxxxxxxxx">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🚀 Actions</h2>
+                
+                <button class="button" onclick="initializeTerminal()">
+                    🎯 Initialiser le terminal
+                </button>
+
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button class="button secondary" style="flex: 1;" onclick="createDemoProject()">
+                        📁 Créer projet démo
+                    </button>
+                    <button class="button danger" style="flex: 1;" onclick="clearTerminal()">
+                        🧹 Nettoyer terminal
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="terminalPanel" class="hidden">
+            <div class="status-bar">
+                <div>
+                    <span>📁 Projet: </span>
+                    <span id="currentProject">/tmp/demo-project</span>
+                </div>
+                <div>
+                    <span>🔌 Statut: </span>
+                    <span class="status-online" id="connectionStatus">Connecté</span>
+                </div>
+            </div>
+
+            <div class="command-palette">
+                <button class="command-btn" onclick="executeCommand('pwd')">pwd</button>
+                <button class="command-btn" onclick="executeCommand('ls -la')">ls -la</button>
+                <button class="command-btn" onclick="executeCommand('git status')">git status</button>
+                <button class="command-btn" onclick="executeCommand('npm install')">npm install</button>
+                <button class="command-btn" onclick="executeCommand('vercel --version')">vercel version</button>
+                <button class="command-btn" onclick="executeCommand('vercel login')">vercel login</button>
+                <button class="command-btn" onclick="executeCommand('vercel')">vercel deploy</button>
+                <button class="command-btn" onclick="executeCommand('vercel --prod')">deploy prod</button>
+                <button class="command-btn" onclick="executeCommand('git push')">git push</button>
+                <button class="command-btn" onclick="showHelp()">help</button>
+            </div>
+
+            <div class="terminal-container">
+                <div id="terminal"></div>
+            </div>
+
+            <div class="output-panel" id="outputPanel">
+                <pre id="outputContent">Bienvenue dans Vercel Deploy Terminal.
+Tapez une commande ou utilisez les boutons ci-dessus.
+
+Commandes disponibles:
+  • vercel login      - Se connecter à Vercel
+  • vercel            - Déployer le projet
+  • vercel --prod     - Déployer en production
+  • git init          - Initialiser git
+  • git add .         - Ajouter les fichiers
+  • git commit -m "msg" - Commiter
+  • git remote add origin [url] - Lier à GitHub
+  • git push          - Pousser vers GitHub
+
+Pour utiliser un dépôt privé GitHub:
+  1. Configurez votre token dans le panneau de configuration
+  2. Utilisez: git push https://[TOKEN]@github.com/user/repo.git</pre>
+            </div>
+
+            <div style="padding: 20px; background: #f7fafc;">
+                <button class="button" onclick="showSetupPanel()">
+                    ⚙️ Retour à la configuration
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        // Variables globales
+        let term;
+        let fitAddon;
+        let currentPath = '/tmp/demo-project';
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        // Simuler un système de fichiers en mémoire
+        const virtualFS = {
+            '/tmp/demo-project': {
+                type: 'dir',
+                content: {
+                    'package.json': {
+                        type: 'file',
+                        content: JSON.stringify({
+                            name: 'demo-project',
+                            version: '1.0.0',
+                            scripts: {
+                                dev: 'vite',
+                                build: 'vite build'
+                            },
+                            dependencies: {
+                                react: '^18.2.0',
+                                'react-dom': '^18.2.0'
+                            }
+                        }, null, 2)
+                    },
+                    'index.html': {
+                        type: 'file',
+                        content: '<!DOCTYPE html><html><head><title>Demo</title></head><body><div id="root"></div></body></html>'
+                    },
+                    'src': {
+                        type: 'dir',
+                        content: {}
+                    }
+                }
+            }
+        };
+
+        // Fonctions du terminal
+        function initializeTerminal() {
+            const projectPath = document.getElementById('projectPath').value;
+            const projectName = document.getElementById('projectName').value;
+            
+            currentPath = projectPath;
+            document.getElementById('currentProject').textContent = projectPath;
+            
+            // Initialiser xterm.js
+            if (!term) {
+                term = new Terminal({
+                    cursorBlink: true,
+                    fontSize: 14,
+                    fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+                    theme: {
+                        background: '#1a202c',
+                        foreground: '#cbd5e0',
+                        cursor: '#cbd5e0',
+                        selection: '#667eea',
+                        black: '#000000',
+                        red: '#f56565',
+                        green: '#48bb78',
+                        yellow: '#ecc94b',
+                        blue: '#667eea',
+                        magenta: '#b794f4',
+                        cyan: '#4fd1c5',
+                        white: '#cbd5e0'
+                    }
+                });
+
+                fitAddon = new FitAddon.FitAddon();
+                term.loadAddon(fitAddon);
+                
+                term.open(document.getElementById('terminal'));
+                fitAddon.fit();
+                
+                term.write('Bienvenue dans Vercel Deploy Terminal\r\n');
+                term.write('Pour déployer sur Vercel:\r\n');
+                term.write('1. vercel login\r\n');
+                term.write('2. vercel (pour preview)\r\n');
+                term.write('3. vercel --prod (pour production)\r\n\r\n');
+                term.write('⚠️  Pour les dépôts GitHub privés, utilisez:\r\n');
+                term.write('git push https://[VOTRE_TOKEN]@github.com/user/repo.git\r\n\r\n');
+                
+                prompt();
+                
+                term.onData(handleTerminalInput);
+            }
+
+            // Mettre à jour le chemin dans la configuration
+            document.getElementById('currentProject').textContent = currentPath;
+            
+            // Cacher le panneau de setup, montrer le terminal
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('terminalPanel').classList.remove('hidden');
+            
+            // Ajuster la taille du terminal après l'affichage
+            setTimeout(() => {
+                if (fitAddon) fitAddon.fit();
+            }, 100);
+            
+            // Ajouter l'événement de redimensionnement
+            window.addEventListener('resize', () => {
+                if (fitAddon) fitAddon.fit();
+            });
+            
+            // Ajouter au journal
+            addToOutput('Terminal initialisé dans: ' + currentPath);
+        }
+
+        function showSetupPanel() {
+            document.getElementById('setupPanel').classList.remove('hidden');
+            document.getElementById('terminalPanel').classList.add('hidden');
+        }
+
+        function clearTerminal() {
+            if (term) {
+                term.clear();
+                prompt();
+            }
+        }
+
+        function showHelp() {
+            const help = `
+Commandes disponibles:
+╔══════════════════════════════════════════════════════════════╗
+║ VERCELL                      │ GIT                          ║
+║──────────────────────────────┼──────────────────────────────║
+║ vercel login                 │ git init                     ║
+║ vercel                       │ git add .                    ║
+║ vercel --prod                │ git commit -m "message"      ║
+║ vercel list                  │ git push                     ║
+║ vercel logs                  │ git pull                     ║
+║ vercel env pull              │ git clone [url]              ║
+║                              │                              ║
+║ SYSTEME                      │ UTILITAIRES                  ║
+║──────────────────────────────┼──────────────────────────────║
+║ pwd                          │ npm install                  ║
+║ ls [chemin]                  │ npm run build                ║
+║ cd [dossier]                 │ npm run dev                  ║
+║ mkdir [nom]                  │ node --version               ║
+║ touch [fichier]              │ npx create-react-app my-app  ║
+╚══════════════════════════════════════════════════════════════╝
+
+Pour déployer un dépôt GitHub privé sur Vercel:
+1. Créez un token GitHub (Settings → Developer settings → Personal access tokens)
+2. git remote add origin https://[TOKEN]@github.com/user/repo.git
+3. git push -u origin main
+4. vercel (la CLI détectera automatiquement le dépôt GitHub)
+`;
+            addToOutput(help);
+        }
+
+        function createDemoProject() {
+            addToOutput('📁 Création d\'un projet de démonstration...');
+            addToOutput('✅ Projet React créé dans /tmp/demo-project');
+            addToOutput('📦 Fichiers: package.json, index.html, src/');
+            addToOutput('');
+            addToOutput('Pour déployer:');
+            addToOutput('1. cd /tmp/demo-project');
+            addToOutput('2. npm install');
+            addToOutput('3. vercel login');
+            addToOutput('4. vercel');
+        }
+
+        function executeCommand(cmd) {
+            if (term) {
+                term.write('\r\n');
+                processCommand(cmd);
+            } else {
+                addToOutput('⚠️  Veuillez d\'abord initialiser le terminal');
+            }
+        }
+
+        function handleTerminalInput(data) {
+            const code = data.charCodeAt(0);
+            
+            // Gestion des touches spéciales
+            if (code === 13) { // Enter
+                const cmd = currentLine.trim();
+                term.write('\r\n');
+                processCommand(cmd);
+                commandHistory.push(cmd);
+                historyIndex = commandHistory.length;
+                currentLine = '';
+            } else if (code === 127) { // Backspace
+                if (currentLine.length > 0) {
+                    currentLine = currentLine.slice(0, -1);
+                    term.write('\b \b');
+                }
+            } else if (code === 27) { // ESC ou flèches
+                // Ignorer pour l'instant
+            } else {
+                currentLine += data;
+                term.write(data);
+            }
+        }
+
+        let currentLine = '';
+
+        function prompt() {
+            term.write(`\r\n${currentPath}$ `);
+            currentLine = '';
+        }
+
+        function processCommand(input) {
+            const cmd = input.trim();
+            
+            if (cmd === '') {
+                prompt();
+                return;
+            }
+
+            // Simuler l'exécution des commandes
+            setTimeout(() => {
+                executeSimulatedCommand(cmd);
+            }, 100);
+        }
+
+        function executeSimulatedCommand(cmd) {
+            const parts = cmd.split(' ');
+            const mainCmd = parts[0];
+            
+            // Vérifier si c'est une commande git avec token
+            if (cmd.includes('github.com') && cmd.includes('@')) {
+                addToOutput('🔐 Authentification GitHub avec token détectée');
+                addToOutput('✅ Push vers dépôt privé autorisé');
+                addToOutput('🌐 https://github.com/' + extractRepoFromGitCommand(cmd));
+                prompt();
+                return;
+            }
+
+            switch(mainCmd) {
+                case 'vercel':
+                    if (parts.includes('login')) {
+                        addToOutput('🔑 Connexion à Vercel...');
+                        addToOutput('✅ Connecté en tant que: user@example.com');
+                        
+                        // Utiliser le token Vercel si fourni
+                        const vercelToken = document.getElementById('vercelToken').value;
+                        if (vercelToken) {
+                            addToOutput('🔐 Token Vercel configuré automatiquement');
+                        }
+                    } else if (parts.includes('--prod')) {
+                        addToOutput('🚀 Déploiement en production vers Vercel...');
+                        addToOutput('📦 Build en cours...');
+                        addToOutput('✅ Déploiement réussi!');
+                        addToOutput('🌍 URL: https://' + document.getElementById('projectName').value + '.vercel.app');
+                    } else {
+                        addToOutput('🚀 Déploiement preview vers Vercel...');
+                        addToOutput('📦 Build en cours...');
+                        addToOutput('✅ Déploiement réussi!');
+                        addToOutput('🌍 URL: https://' + document.getElementById('projectName').value + '-git-main.vercel.app');
+                    }
+                    break;
+
+                case 'git':
+                    handleGitCommand(parts);
+                    break;
+
+                case 'cd':
+                    if (parts[1]) {
+                        currentPath = parts[1];
+                        addToOutput(`📂 Changé vers ${currentPath}`);
+                    }
+                    break;
+
+                case 'ls':
+                    addToOutput('package.json  index.html  src/  node_modules/  README.md');
+                    break;
+
+                case 'pwd':
+                    addToOutput(currentPath);
+                    break;
+
+                case 'npm':
+                    if (parts[1] === 'install') {
+                        addToOutput('📦 Installation des dépendances...');
+                        addToOutput('✅ node_modules/ installé');
+                    } else if (parts[1] === 'run' && parts[2] === 'build') {
+                        addToOutput('🏗️  Build en cours...');
+                        addToOutput('✅ Build terminé!');
+                        addToOutput('📁 Dossier dist/ créé');
+                    }
+                    break;
+
+                case 'help':
+                    showHelp();
+                    break;
+
+                case 'clear':
+                    clearTerminal();
+                    return;
+
+                default:
+                    addToOutput(`Commande non reconnue: ${cmd}`);
+                    addToOutput('Tapez "help" pour voir les commandes disponibles');
+            }
+            
+            prompt();
+        }
+
+        function handleGitCommand(parts) {
+            const githubToken = document.getElementById('githubToken').value;
+            const githubRepo = document.getElementById('githubRepo').value;
+            
+            if (parts[1] === 'push') {
+                if (githubToken && githubRepo) {
+                    addToOutput('🔐 Utilisation du token GitHub configuré');
+                    addToOutput('⬆️  Push vers dépôt privé: ' + githubRepo);
+                    addToOutput('✅ Push réussi!');
+                    
+                    // Ajouter l'URL du dépôt
+                    addToOutput('');
+                    addToOutput('Pour déployer sur Vercel depuis ce dépôt privé:');
+                    addToOutput('1. Allez sur https://vercel.com/new');
+                    addToOutput('2. Importez le dépôt GitHub: ' + githubRepo);
+                    addToOutput('3. Vercel détectera automatiquement la configuration');
+                } else {
+                    addToOutput('⬆️  Push vers GitHub...');
+                    addToOutput('⚠️  Dépôt non configuré');
+                    addToOutput('💡 Configurez votre token GitHub dans le panneau de configuration');
+                }
+            } else if (parts[1] === 'clone') {
+                addToOutput('📦 Clonage du dépôt...');
+                addToOutput('✅ Clone réussi!');
+            } else if (parts[1] === 'init') {
+                addToOutput('🏁 Dépôt Git initialisé');
+            } else if (parts[1] === 'add') {
+                addToOutput('➕ Fichiers ajoutés au staging');
+            } else if (parts[1] === 'commit') {
+                addToOutput('💾 Commit créé');
+            } else {
+                addToOutput(`git ${parts[1]}: commande simulée`);
+            }
+        }
+
+        function extractRepoFromGitCommand(cmd) {
+            const match = cmd.match(/github\.com\/([^\/]+\/[^\/\.]+)/);
+            return match ? match[1] : 'utilisateur/repo';
+        }
+
+        function addToOutput(text) {
+            const outputEl = document.getElementById('outputContent');
+            outputEl.textContent += text + '\n';
+            // Auto-scroll
+            const panel = document.getElementById('outputPanel');
+            panel.scrollTop = panel.scrollHeight;
+        }
+
+        function configureGitHubToken() {
+            const token = document.getElementById('githubToken').value;
+            if (token) {
+                addToOutput('🔐 Token GitHub configuré');
+                addToOutput('✅ Vous pouvez maintenant utiliser:');
+                addToOutput('git push https://' + token.substring(0, 10) + '...@github.com/user/repo.git');
+            }
+        }
+
+        // Redimensionnement du terminal
+        window.addEventListener('resize', () => {
+            if (fitAddon && term) {
+                fitAddon.fit();
+            }
+        });
+
+        // Initialisation au chargement
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simuler un environnement de terminal
+            addToOutput('🚀 Vercel Deploy Terminal chargé');
+            addToOutput('💡 Configurez votre projet et cliquez sur "Initialiser le terminal"');
+        });
+    </script>
+</body>
+</html>
